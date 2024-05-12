@@ -1,8 +1,8 @@
 console.clear();
 ("use strict");
 
-const startStop = document.createElement('button');
-startStop.innerHTML = ("Start/Restart");
+const startRestart = document.createElement('button');
+startRestart.innerHTML = ("Start/Restart");
 
 const canvas = document.createElement('canvas');
 canvas.width = "700";
@@ -10,36 +10,62 @@ canvas.height = "700";
 canvas.style = "border:1px solid black";
 
 var body = document.getElementsByTagName("body")[0];
-body.appendChild(startStop);
+body.appendChild(startRestart);
 body.appendChild(canvas);
 
 const ctx = canvas.getContext("2d");
-const ballSize = 25;
-const direction = 0;
-const speed = 10;
-const gravity = 5;
 
+const gravity = {x: 0, y: 0.1}; //Gravity == acceleration / time
 
-//Sleep function
-function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+//Ballss
+
+const ball1 = {
+	pos: {x: canvas.width/2, y: 0},
+	vel: {x: 0, y: 0},
+	size: 10,
+	shape: "circle",
+	fill: 0,
+	colour: "black",
+	lineWidth: 1,
 }
 
+function reset(obj) { 
+	obj.pos.y = obj.vel.y = obj.vel.x = 0 
+}
+
+function update(obj) {
+	
+	
+	
+	
+	
+	obj.vel.x += gravity.x;
+	obj.vel.y += gravity.y;
+	obj.pos.x += obj.vel.x;
+	obj.pos.y += obj.vel.y;
+}
+
+
 //draw :D
-function draw(shape, x, y, size, fill, lineWidth) {
-	ctx.clearRect(0, 0, 950, 950);
+function draw(obj) {
 	ctx.beginPath();
 	
-	if (shape == "circle"){
-		ctx.arc(x, y, size, 0, Math.PI*2);
-	}	else if (shape == "square"){
+	if (obj.shape == "circle"){
+
+		ctx.arc(obj.pos.x, obj.pos.y, obj.size, 0, Math.PI*2);
+	}
+	else if (obj.shape == "square"){
 			console.log("lol");
 	}
 	
-	if (fill == 1) {
+	if (obj.fill == 1) {
+
+		ctx.fillStyle = obj.colour;
 		ctx.fill();
+
 	} else {
-		ctx.lineWidth = lineWidth;
+		ctx.strokeStyle = obj.colour;
+		ctx.lineWidth = obj.lineWidth;
 		ctx.stroke();
 	}
 	
@@ -47,21 +73,16 @@ function draw(shape, x, y, size, fill, lineWidth) {
 	ctx.closePath();
 }
 
-function phys(time) {
-
-	draw("circle", 0, 0, ballSize, 0, 2);
-	console.log("help", time);
-}
 
 
-//Calls the draw, phys, and sleep functions
+//Main loop for this program.
 async function mainLoop() {
-	for (let i = 0; i <= 5; i++) {
-		phys(i);
-		await sleep(250);
-	}
+	ctx.clearRect(0, 0, 950, 950);
+	update(ball1);
+	draw(ball1);
+	requestAnimationFrame(mainLoop);
 }
 
 
-startStop.addEventListener("click", phys);
+startRestart.addEventListener("click", mainLoop /*&& reset(ball1)*/);
 
