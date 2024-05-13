@@ -17,19 +17,19 @@ const ctx = canvas.getContext("2d");
 
 let running = 0;
 let start, previousTimeStamp;
-const gravity = {x: 0, y: 0.2}; //Gravity == acceleration / time
+const gravity = {x: 0, y: 0.5}; //Gravity == acceleration / time
 const bounce = 1;
-const velStart = {x: -3, y: 0};
-const posStart = {x: (canvas.width/2), y: 10};
+const velStart = {x: -3, y: 10};
+const posStart = {x: (canvas.width/2), y: 30};
 
 const map1 = {
 	leftWall: 1,
-	rightWall:1,
-	floor:1
+	rightWall: 1,
+	floor: 1
 }
 
 const ball1 = {
-	pos: {x: 200, y: posStart.y},
+	pos: {x: 100, y: 100},
 	vel: {x: velStart.x, y: velStart.y},
 	size: 10,
 	shape: "circle",
@@ -40,12 +40,10 @@ const ball1 = {
 
 
 function reset(obj) { 
-	running = 0;
 	obj.pos.x = posStart.x;
 	obj.pos.y = posStart.y;
 	obj.vel.x = velStart.x;
 	obj.vel.y = velStart.y;
-
 }
 
 function update(obj, map) {
@@ -62,6 +60,13 @@ function update(obj, map) {
 
 	}
 
+	if (obj.pos.y - obj.size <= 0) {
+
+		obj.pos.y = (0 + obj.size);
+        obj.vel.y = Math.abs(obj.vel.y) * bounce;
+
+	}
+
 	if (obj.pos.x + obj.size >= canvas.width) {
 
 		obj.pos.x = (canvas.width - obj.size);
@@ -75,6 +80,7 @@ function update(obj, map) {
         obj.vel.x = Math.abs(obj.vel.x) * bounce;
 
 	}
+
 	//console.log(ball1.pos.x, ball1.pos.y, ball1.vel.x, ball1.vel.y);
 }
 
@@ -108,31 +114,45 @@ function draw(obj) {
 
 
 function step(timeStamp) {
-	if (start === undefined) {
+	if (start === undefined || NaN) {
 	  start = timeStamp;
 	}
-	const elapsed = timeStamp - start;
   
 	if (previousTimeStamp !== timeStamp){
-		if (running == 1){
-			reset(ball1);
-			console.log("reset");
 
-		} else {
-			mainLoop();
-			console.log("run");
-		}
-		console.log(elapsed);
+		mainLoop();
+
 	}
 }
 
 //Main loop for this program.
 async function mainLoop() {
 	ctx.clearRect(0, 0, 950, 950);
-	running = 1;
 	update(ball1);
 	draw(ball1);
 	window.requestAnimationFrame(step);
 }
 
-startRestart.addEventListener("click", step);
+function startStop() {
+
+	console.log(running);
+
+	if (running = 1){
+
+		reset(ball1);
+		console.log("reset");
+		running = 0;
+
+	} 
+	
+	if (running == 0) {
+
+		mainLoop();
+		running = 1;
+		console.log("run");
+
+	}
+
+}
+
+startRestart.addEventListener("click", startStop);
