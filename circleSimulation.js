@@ -15,34 +15,67 @@ body.appendChild(canvas);
 
 const ctx = canvas.getContext("2d");
 
-const gravity = {x: 0, y: 0.1}; //Gravity == acceleration / time
+let running = 0;
+let start, previousTimeStamp;
+const gravity = {x: 0, y: 0.2}; //Gravity == acceleration / time
+const bounce = 1;
+const velStart = {x: -3, y: 0};
+const posStart = {x: (canvas.width/2), y: 10};
 
-//Ballss
+const map1 = {
+	leftWall: 1,
+	rightWall:1,
+	floor:1
+}
 
 const ball1 = {
-	pos: {x: canvas.width/2, y: 0},
-	vel: {x: 0, y: 0},
+	pos: {x: 200, y: posStart.y},
+	vel: {x: velStart.x, y: velStart.y},
 	size: 10,
 	shape: "circle",
-	fill: 0,
+	fill: 1,
 	colour: "black",
 	lineWidth: 1,
 }
 
+
 function reset(obj) { 
-	obj.pos.y = obj.vel.y = obj.vel.x = 0 
+	running = 0;
+	obj.pos.x = posStart.x;
+	obj.pos.y = posStart.y;
+	obj.vel.x = velStart.x;
+	obj.vel.y = velStart.y;
+
 }
 
-function update(obj) {
-	
-	
-	
-	
-	
+function update(obj, map) {
+
 	obj.vel.x += gravity.x;
 	obj.vel.y += gravity.y;
 	obj.pos.x += obj.vel.x;
 	obj.pos.y += obj.vel.y;
+
+	if (obj.pos.y + obj.size >= canvas.height) {
+
+		obj.pos.y = (canvas.height - obj.size);
+        obj.vel.y = -Math.abs(obj.vel.y) * bounce;
+
+	}
+
+	if (obj.pos.x + obj.size >= canvas.width) {
+
+		obj.pos.x = (canvas.width - obj.size);
+        obj.vel.x = -Math.abs(obj.vel.x) * bounce;
+
+	}
+
+	if (obj.pos.x - obj.size <= 0) {
+
+		obj.pos.x = (0 + obj.size);
+        obj.vel.x = Math.abs(obj.vel.x) * bounce;
+
+	}
+	//console.log(ball1.pos.x, ball1.pos.y, ball1.vel.x, ball1.vel.y);
 }
 
 
@@ -74,15 +107,32 @@ function draw(obj) {
 }
 
 
+function step(timeStamp) {
+	if (start === undefined) {
+	  start = timeStamp;
+	}
+	const elapsed = timeStamp - start;
+  
+	if (previousTimeStamp !== timeStamp){
+		if (running == 1){
+			reset(ball1);
+			console.log("reset");
+
+		} else {
+			mainLoop();
+			console.log("run");
+		}
+		console.log(elapsed);
+	}
+}
 
 //Main loop for this program.
 async function mainLoop() {
 	ctx.clearRect(0, 0, 950, 950);
+	running = 1;
 	update(ball1);
 	draw(ball1);
-	requestAnimationFrame(mainLoop);
+	window.requestAnimationFrame(step);
 }
 
-
-startRestart.addEventListener("click", mainLoop /*&& reset(ball1)*/);
-
+startRestart.addEventListener("click", step);
