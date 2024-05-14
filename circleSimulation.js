@@ -2,7 +2,7 @@ console.clear();
 ("use strict");
 
 const startResetButton = document.createElement('button');
-startResetButton.innerHTML = ("Start");
+startResetButton.innerHTML = ("Start/Reset");
 const pauseButton = document.createElement('button');
 pauseButton.innerHTML = ("Pause/Unpause");
 
@@ -19,12 +19,15 @@ body.appendChild(canvas);
 
 const ctx = canvas.getContext("2d");
 
+let clearing = true;
 let running = 0;
+let doReset = 0;
+let paused = 0;
 let start, previousTimeStamp;
 const bounce = 0.4;
 const speedStart = {x: 5.43252354234, y: 10};
 const speedMultiplier = 2
-const posStart = {x: (canvas.width/2), y: 10};
+let ballSize = 10;
 
 //future map implementation//
 
@@ -34,12 +37,17 @@ const map1 = {
 	floor: 1
 }
 
+function getRandomPos( min, max) { 
+	return Math.random() * ((max - ballSize) - (min + ballSize)) + min;
+}
+
+
 //properties of the first ball//
 
 const ball1 = {
-	pos: {x: 100, y: 100},
+	posStart: {x: getRandomPos(ballSize, canvas.width), y: getRandomPos(ballSize, canvas.height)},
+	pos: {x: this.posStart, y: this.posStart},
 	speed: {x: speedStart.x * speedMultiplier, y: speedStart.y * speedMultiplier},
-	size: 10,
 	shape: "circle",
 	fill: 1,
 	colour: "black",
@@ -47,10 +55,12 @@ const ball1 = {
 }
 
 function reset(obj) { 
-	obj.pos.x = posStart.x;
-	obj.pos.y = posStart.y;
-	obj.speed.x = speedStart.x;
-	obj.speed.y = speedStart.y;
+	obj.pos.x = getRandomPos(ballSize, canvas.width);
+	obj.pos.y = getRandomPos(ballSize, canvas.height);
+	obj.pos.x = obj.posStart.x + ballSize;
+	obj.pos.y = obj.posStart.y + ballSize;
+	obj.speed.x = speedStart.x * speedMultiplier;
+	obj.speed.y = speedStart.y * speedMultiplier;
 }
 
 function update(obj, map) {
@@ -58,30 +68,30 @@ function update(obj, map) {
 	obj.pos.x += obj.speed.x;
 	obj.pos.y += obj.speed.y;
 
-	if (obj.pos.y + obj.size >= canvas.height) {
+	if (obj.pos.y + ballSize >= canvas.height) {
 
-		obj.pos.y = (canvas.height - obj.size);
+		obj.pos.y = (canvas.height - ballSize);
         obj.speed.y = obj.speed.y * -1;
 
 	}
 
-	if (obj.pos.y - obj.size <= 0) {
+	if (obj.pos.y - ballSize <= 0) {
 
-		obj.pos.y = (0 + obj.size);
+		obj.pos.y = (0 + ballSize);
         obj.speed.y = obj.speed.y * -1;
 
 	}
 
-	if (obj.pos.x + obj.size >= canvas.width) {
+	if (obj.pos.x + ballSize >= canvas.width) {
 
-		obj.pos.x = (canvas.width - obj.size);
+		obj.pos.x = (canvas.width - ballSize);
         obj.speed.x = obj.speed.x * -1;
 
 	}
 
-	if (obj.pos.x - obj.size <= 0) {
+	if (obj.pos.x - ballSize <= 0) {
 
-		obj.pos.x = (0 + obj.size);
+		obj.pos.x = (0 + ballSize);
         obj.speed.x = obj.speed.x * -1;
 
 	}
@@ -97,7 +107,7 @@ function draw(obj) {
 	
 	if (obj.shape == "circle"){
 
-		ctx.arc(obj.pos.x, obj.pos.y, obj.size, 0, Math.PI*2);
+		ctx.arc(obj.pos.x, obj.pos.y, ballSize, 0, Math.PI*2);
 	}
 	else if (obj.shape == "square"){
 			console.log("lol");
@@ -121,7 +131,7 @@ function draw(obj) {
 
 function step(timeStamp) {
 	
-	if (running == 1) {
+	if (running == 1 && paused == 0) {
 		
 		if (start === undefined || NaN) {
 
@@ -138,7 +148,9 @@ function step(timeStamp) {
 
 //Main loop for this program.
 function mainLoop() {
-	ctx.clearRect(0, 0, 950, 950);
+	if (clearing == true) {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	}
 	update(ball1);
 	draw(ball1);
 	window.requestAnimationFrame(step);
@@ -146,22 +158,20 @@ function mainLoop() {
 
 async function startReset() {
 
-	console.log(running);
+	console.log(ball1.posStart.x);
 
-	if (running == 1){
+	if (doReset == 1){
 
-		running = 0;
+		reset(ball1);
+		ctx.clearRect(0,0,950,950);
+		draw(ball1);
+
+	} if (doReset == 0) {
+		
 		reset(ball1);
 		running = 1;
-
-		console.log("reset");
-
-	} else if (running == 0) {
-		
-		running = 1;
+		doReset = 1;
 		mainLoop();
-		
-		console.log("run");
 
 	}
 
@@ -169,13 +179,14 @@ async function startReset() {
 
 function pause() {
 
-	switch (running) {
-		case running = 1:
+	switch (paused) {
+		case paused = 0:
+			paused = 1;
 			running = 0;
-			console.log("reset");
 			break;
 
-		case running = 0:
+		case paused = 1:
+			paused = 0;
 			running = 1;
 			mainLoop();
 			break;
