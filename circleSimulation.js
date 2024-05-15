@@ -25,7 +25,6 @@ let doReset = 0;
 let paused = 0;
 let start, previousTimeStamp;
 const bounce = 0.4;
-const speedStart = {x: 5.43252354234, y: 10};
 const speedMultiplier = 2
 let ballSize = 10;
 
@@ -37,17 +36,18 @@ const map1 = {
 	floor: 1
 }
 
-function getRandomPos( min, max) { 
-	return Math.random() * ((max - ballSize) - (min + ballSize)) + min;
+function getRandom( min, max, limit) { 
+	return Math.random() * ((max - limit) - (min + limit)) + min;
 }
 
 
 //properties of the first ball//
 
 const ball1 = {
-	posStart: {x: getRandomPos(ballSize, canvas.width), y: getRandomPos(ballSize, canvas.height)},
+	posStart: {x: getRandom(ballSize, canvas.width, ballSize*2), y: getRandom(ballSize, canvas.height, ballSize*2)},
 	pos: {x: this.posStart, y: this.posStart},
-	speed: {x: speedStart.x * speedMultiplier, y: speedStart.y * speedMultiplier},
+	speedStart: {x: getRandom(), y: 0},
+	speed: {x: this.speedStart.x * speedMultiplier, y: this.speedStart.y * speedMultiplier},
 	shape: "circle",
 	fill: 1,
 	colour: "black",
@@ -55,10 +55,8 @@ const ball1 = {
 }
 
 function reset(obj) { 
-	obj.pos.x = getRandomPos(ballSize, canvas.width);
-	obj.pos.y = getRandomPos(ballSize, canvas.height);
-	obj.pos.x = obj.posStart.x + ballSize;
-	obj.pos.y = obj.posStart.y + ballSize;
+	obj.pos.x = getRandom(ballSize, canvas.width, ballSize*2);
+	obj.pos.y = getRandom(ballSize, canvas.width, ballSize*2);
 	obj.speed.x = speedStart.x * speedMultiplier;
 	obj.speed.y = speedStart.y * speedMultiplier;
 }
