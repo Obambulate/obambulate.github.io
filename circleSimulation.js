@@ -12,7 +12,7 @@ canvas.width = "700";
 canvas.height = "700";
 canvas.style = "border:1px solid black";
 
-var body = document.getElementsByTagName("body")[0];
+const body = document.getElementsByTagName("body")[0];
 body.appendChild(startResetButton);
 body.appendChild(pauseButton);
 body.appendChild(canvas);
@@ -36,29 +36,46 @@ const map1 = {
 	floor: 1
 }
 
-function getRandom( min, max, limit) { 
-	return Math.random() * ((max - limit) - (min + limit)) + min;
+function getRandom( min, max, limit, wholeNumber) { 
+
+	if (wholeNumber == NaN || undefined) {wholeNumber = false};
+	if (limit == NaN || undefined) {limit = 0};
+
+	let rand = Math.random() * ((max - limit) - (min + limit)) + min;
+
+
+	if (wholeNumber == true) {
+
+		return Math.trunc(rand);
+
+	} else {
+		return rand;
+	}
 }
 
 
 //properties of the first ball//
 
-const ball1 = {
-	posStart: {x: getRandom(ballSize, canvas.width, ballSize*2), y: getRandom(ballSize, canvas.height, ballSize*2)},
-	pos: {x: this.posStart, y: this.posStart},
-	speedStart: {x: getRandom(), y: 0},
-	speed: {x: this.speedStart.x * speedMultiplier, y: this.speedStart.y * speedMultiplier},
-	shape: "circle",
-	fill: 1,
-	colour: "black",
-	lineWidth: 1,
+let ball1 = {
+	maxSpeed: 	{x: 10, y: 10},
+	posStart: 	{x: 0, y: 0},
+	speedStart: {x: 0, y: 0},
+	pos: 		{x: 0, y: 0},
+	speed: 		{x: 0, y: 0},
+	shape: 		"circle",
+	colour: 	"black",
+	fill: 		1,
+	lineWidth: 	1
 }
 
-function reset(obj) { 
+async function reset(obj) { 
 	obj.pos.x = getRandom(ballSize, canvas.width, ballSize*2);
 	obj.pos.y = getRandom(ballSize, canvas.width, ballSize*2);
-	obj.speed.x = speedStart.x * speedMultiplier;
-	obj.speed.y = speedStart.y * speedMultiplier;
+	obj.speed.x = getRandom((-1 * obj.maxSpeed.x), obj.maxSpeed.x, 0);
+	obj.speed.y = ( 10 - (Math.abs(obj.speed.x) * (getRandom(-2,2,0,true))) );
+
+	console.log(getRandom(-2,2,0,true));
+	console.log(obj.speed.x, " + ", obj.speed.y, " == ", Math.abs(obj.speed.x) + Math.abs(obj.speed.y));
 }
 
 function update(obj, map) {
@@ -93,8 +110,6 @@ function update(obj, map) {
         obj.speed.x = obj.speed.x * -1;
 
 	}
-
-	//console.log(ball1.pos.x, ball1.pos.y, ball1.speed.x, ball1.speed.y);
 
 }
 
@@ -154,9 +169,8 @@ function mainLoop() {
 	window.requestAnimationFrame(step);
 }
 
-async function startReset() {
+function startReset() {
 
-	console.log(ball1.posStart.x);
 
 	if (doReset == 1){
 
