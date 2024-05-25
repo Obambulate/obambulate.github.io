@@ -72,9 +72,11 @@ async function reset(obj) {
 	obj.pos.x = getRandom(ballSize, canvas.width, ballSize*2);
 	obj.pos.y = getRandom(ballSize, canvas.width, ballSize*2);
 	obj.speed.x = getRandom((-1 * obj.maxSpeed.x), obj.maxSpeed.x, 0);
-	obj.speed.y = ( 10 - (Math.abs(obj.speed.x) * (getRandom(-2,2,0,true))) );
+	obj.speed.y = ( 10 - (Math.abs(obj.speed.x) * funtion() {(
+		let number = getRandom(-1,1,0,true);
+		if (number <= 0){return (-1)} else if (number >= 0) {return (1)})))} );
 
-	console.log(getRandom(-2,2,0,true));
+	console.log(getRandom(-1,1,0,true));
 	console.log(obj.speed.x, " + ", obj.speed.y, " == ", Math.abs(obj.speed.x) + Math.abs(obj.speed.y));
 }
 
