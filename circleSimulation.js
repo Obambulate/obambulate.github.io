@@ -28,7 +28,25 @@ const bounce = 0.4;
 const speedMultiplier = 2
 let ballSize = 10;
 
-//future map implementation//
+function getRandom( min, max, limit, wholeNumber) { 
+	if (typeof wholeNumber === 'undefined' || isNaN(wholeNumber)) {wholeNumber = false};
+	if (typeof limit === 'undefined' || isNaN(wholeNumber)) {limit = 0};
+
+	let rand = Math.random() * ((max - limit) - (min + limit)) + min;
+
+	if (wholeNumber == true) {
+		return Math.trunc(rand);
+	} else {
+		return rand;
+	}
+}
+
+function oneOrNegOne(number) {	
+	if (number < 0) {return (-1)}
+	else if (number >= 0) {return (1)}
+}
+
+// future map implementation //
 
 const map1 = {
 	leftWall: 1,
@@ -36,25 +54,7 @@ const map1 = {
 	floor: 1
 }
 
-function getRandom( min, max, limit, wholeNumber) { 
-
-	if (wholeNumber == NaN || undefined) {wholeNumber = false};
-	if (limit == NaN || undefined) {limit = 0};
-
-	let rand = Math.random() * ((max - limit) - (min + limit)) + min;
-
-
-	if (wholeNumber == true) {
-
-		return Math.trunc(rand);
-
-	} else {
-		return rand;
-	}
-}
-
-
-//properties of the first ball//
+// Balls //
 
 let ball1 = {
 	maxSpeed: 	{x: 10, y: 10},
@@ -68,16 +68,27 @@ let ball1 = {
 	lineWidth: 	1
 }
 
-async function reset(obj) { 
+let ball2 = {
+	maxSpeed: 	{x: 2, y: 2},
+	posStart: 	{x: 0, y: 0},
+	speedStart: {x: 0, y: 0},
+	pos: 		{x: 0, y: 0},
+	speed: 		{x: 0, y: 0},
+	shape: 		"circle",
+	colour: 	"red",
+	fill: 		1,
+	lineWidth: 	1
+}
+
+let balls = [ball1, ball2];
+
+// Main code //
+
+async function reset(obj) {	
 	obj.pos.x = getRandom(ballSize, canvas.width, ballSize*2);
 	obj.pos.y = getRandom(ballSize, canvas.width, ballSize*2);
-	obj.speed.x = getRandom((-1 * obj.maxSpeed.x), obj.maxSpeed.x, 0);
-	obj.speed.y = ( 10 - (Math.abs(obj.speed.x) * funtion() {(
-		let number = getRandom(-1,1,0,true);
-		if (number <= 0){return (-1)} else if (number >= 0) {return (1)})))} );
-
-	console.log(getRandom(-1,1,0,true));
-	console.log(obj.speed.x, " + ", obj.speed.y, " == ", Math.abs(obj.speed.x) + Math.abs(obj.speed.y));
+	obj.speed.x = getRandom((-1 * obj.maxSpeed.x), obj.maxSpeed.x);
+	obj.speed.y = ((10 - (Math.abs(obj.speed.x))) * oneOrNegOne(getRandom(-1,1)));
 }
 
 function update(obj, map) {
@@ -116,30 +127,22 @@ function update(obj, map) {
 }
 
 
-//draw :D
 function draw(obj) {
 	ctx.beginPath();
-	
-	if (obj.shape == "circle"){
-
+	if (obj.shape == "circle"){		
 		ctx.arc(obj.pos.x, obj.pos.y, ballSize, 0, Math.PI*2);
 	}
 	else if (obj.shape == "square"){
 			console.log("lol");
 	}
-	
-	if (obj.fill == 1) {
-
+	if (obj.fill == 1) {		
 		ctx.fillStyle = obj.colour;
-		ctx.fill();
-
+		ctx.fill();		
 	} else {
 		ctx.strokeStyle = obj.colour;
 		ctx.lineWidth = obj.lineWidth;
 		ctx.stroke();
 	}
-	
-	
 	ctx.closePath();
 }
 
@@ -166,8 +169,15 @@ function mainLoop() {
 	if (clearing == true) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 	}
-	update(ball1);
-	draw(ball1);
+
+	let iterations = balls.length - 1;
+	let i = 0;
+
+	while (step <= iterations) {
+		update(balls[i]);
+		draw(balls[i]);
+		i += 1;
+	}
 	window.requestAnimationFrame(step);
 }
 
@@ -178,7 +188,7 @@ function startReset() {
 
 		reset(ball1);
 		ctx.clearRect(0,0,950,950);
-		draw(ball1);
+		draw(balls);
 
 	} if (doReset == 0) {
 		
