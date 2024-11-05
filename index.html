@@ -5,8 +5,53 @@
         <title> Circle Simulation</title>
         <link rel="stylesheet" href="./style.css">
     </head>
-    <body> 
 
-        <script src="./Simulation.js"></script>
-    </body>
+    <body id="mainBody">  
+        <canvas id="canvas" width="700" height="700"></canvas> 
+        <div id="container">
+            <div class="button-group">
+                <button id="startButton" class="button-Group1">startButton</button>
+                <button id="restartButton" class="button-Group1">restartButton</button>
+                <button id="pauseButton" class="button-Group1">Pause/Play</button>
+                <div class="boxed">
+                    <p class="p1">Number of Particles</p>
+                    <div class="justify">
+                        <input  
+                                id="cloneInput" 
+                                class="grow" 
+                                type="number" 
+                                inputmode="numeric" 
+                                placeholder="input" 
+                                min="1" 
+                                max="10000" 
+                                value="10" 
+                                style="text-align: center;">
+                        </input>
+                      <button id="cloneButton">submit</button>
+                    </div>
+                </div>
+                <div class="boxed">
+                    <p class="p1">
+                        Speed of Particles
+                    </p>
+                    <div class="justify">
+                        <input 
+                            id="speedInput" 
+                            class="grow" 
+                            type="number" 
+                            inputmode="numeric" 
+                            placeholder="input" 
+                            min="1" 
+                            max="10000" 
+                            value="10" 
+                            style="text-align: center;">
+                        </input>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body> 
+    <script src="./Simulation.js"></script>
 </html>
+
+
